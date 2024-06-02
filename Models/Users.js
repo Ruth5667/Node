@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
-const users = mongoose.Schema({ 
-_id: 0,
-name: "",
-email: "", 
-password: "",
-links: []
+import Links from "../Models/Links.js";
+const Users = mongoose.Schema({
+    // _id: Number,
+    name: String,
+    email: String,
+    password: String,
+    links: [String]
 });
-export default mongoose.model("tasks", users);
+export default mongoose.model("users", Users);
 
-  
