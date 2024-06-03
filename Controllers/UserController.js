@@ -19,22 +19,32 @@ const UserController = {
       res.status(400).json({ message: e.message });
     }
   },
-
-  add: async (req, res) => {
+   add: async (req, res) => {
     const { name, email, password, links } = req.body;
     try {
-      const linkObjects = await Links.insertMany(links); // יצירת קישורים חדשים אם יש קישורים במערך
-      const linkIds = linkObjects.map(link => link._id); // יצירת מערך של מזהי הקישורים
-      // יצירת משתמש חדש
-      const newUser = new Users({ _id, name, email, password, links: linkIds });
-      await newUser.save(); // שמירת המסמך במסד הנתונים
-      // שליחת המשתמש החדש בתשובה
+      const linkDocuments = await Promise.all(links.map(link => new Links(link).save()));
+      const newUser = new Users({ name, email, password, links: linkDocuments.map(link => link._id) });
+      await newUser.save();
       res.json(newUser);
-    }
-    catch (e) {
+    } catch (e) {
       res.status(400).json({ message: e.message });
     }
   },
+  // add: async (req, res) => {
+  //   const { name, email, password, links } = req.body;
+  //   try {
+  //     const linkObjects = await Links.insertMany(links); // יצירת קישורים חדשים אם יש קישורים במערך
+  //     const linkIds = linkObjects.map(link => link._id); // יצירת מערך של מזהי הקישורים
+  //     // יצירת משתמש חדש
+  //     const newUser = new Users({ _id, name, email, password, links: linkIds });
+  //     await newUser.save(); // שמירת המסמך במסד הנתונים
+  //     // שליחת המשתמש החדש בתשובה
+  //     res.json(newUser);
+  //   }
+  //   catch (e) {
+  //     res.status(400).json({ message: e.message });
+  //   }
+  // },
 
   update: async (req, res) => {
     const { id } = req.params;
